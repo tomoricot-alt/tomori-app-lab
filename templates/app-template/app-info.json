@@ -1,0 +1,16 @@
+{
+  "id": "007",
+  "name": "TOMORI SAMPLE",
+  "category": "サンプル",
+  "description": "一覧カードに表示される短い紹介文です。1〜2文で書きます。",
+  "tagline": "詳細ページの上部に出るキャッチコピー。",
+  "overview": "詳細ページの「アプリの概要」です。何のためのアプリで、どんな人が、どんなときに使うのかを書きます。READMEとUSER_GUIDEの内容と必ず一致させてください。",
+  "capabilities": ["このアプリでできること1", "このアプリでできること2", "このアプリでできること3"],
+  "features": ["主な機能1", "主な機能2", "主な機能3"],
+  "usageSteps": ["最初の操作", "次の操作", "結果を確認する"],
+  "notes": ["データは端末のブラウザ内だけに保存されます。ブラウザのデータを削除すると消えます。"],
+  "appUrl": "https://tomoricot-alt.github.io/tomori-sample-007/",
+  "icon": "🧩",
+  "userGuideUrl": "https://github.com/tomoricot-alt/tomori-sample-007/blob/main/docs/USER_GUIDE.md",
+  "faq": [{ "q": "よくある質問の例", "a": "その答えの例" }]
+}

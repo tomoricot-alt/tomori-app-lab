@@ -33,6 +33,11 @@ main { flex: 1; }
 .lead, .tagline { color: var(--muted); margin: 0 0 20px; }
 .tagline { font-size: 17px; color: var(--ink); }
 .eyebrow { margin: 0; font-size: 12px; letter-spacing: 0.16em; color: var(--green); font-weight: 600; }
+.progress { max-width: 420px; }
+.progress-text { margin: 0 0 6px; font-size: 14px; color: var(--muted); line-height: 1.6; }
+.progress-text strong { font-size: 22px; color: var(--green); }
+.progress-bar { height: 10px; border-radius: 999px; background: var(--green-soft); overflow: hidden; }
+.progress-fill { height: 100%; min-width: 4px; border-radius: 999px; background: var(--green); }
 .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 900px) { .grid { grid-template-columns: repeat(3, 1fr); } }

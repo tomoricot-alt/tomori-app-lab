@@ -1,33 +1,80 @@
+# 一覧サイトの公開 + 新アプリの自動検出 (生成AI・有料APIは一切使いません)
+#
+# いつ動くか
+#   1. 毎時 (schedule)       … 新アプリ/変更があるときだけビルド・公開。なければ何もしません
+#   2. main へのマージ (push) … 常にビルド・公開 (サイトのデザインや仕組みを変えたとき)
+#   3. 手動実行 (workflow_dispatch) … Actions 画面の「Run workflow」から。常にビルド・公開
+#
+# 自動登録データはリポジトリにコミットせず、毎回ビルド時に作ります。
+# (GITHUB_TOKEN のコミットでは別ワークフローが動かない問題を避け、権限も最小にするため)
 name: Deploy to GitHub Pages
+
 on:
+  schedule:
+    - cron: '17 * * * *' # 毎時17分 (UTC)。正時を避けて遅延を減らす
   push:
     branches: [main]
   workflow_dispatch:
+
 permissions:
   contents: read
-  pages: write
-  id-token: write
+
+# 公開は1つずつ。実行中の公開は途中で止めず、待っている最新の1件だけ残す
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      deploy: ${{ steps.decide.outputs.deploy }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - name: 新しいアプリを確認 (GitHub APIのみ)
+        id: sync
+        # 万一この確認処理が失敗しても、手動登録済みのアプリ(001〜006)は必ず公開する
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FORCE_DEPLOY: ${{ github.event_name != 'schedule' }}
+        run: node scripts/sync-apps.mjs
+      - name: 公開するか判断
+        id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          CHANGED: ${{ steps.sync.outputs.changed }}
+        run: |
+          if [ "$EVENT" != "schedule" ] || [ "$CHANGED" = "true" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+            echo "公開します (event=$EVENT, changed=$CHANGED)"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "変更がないため、ビルドと公開をスキップします"
+          fi
+      - if: steps.decide.outputs.deploy == 'true'
+        run: npm ci
+      - if: steps.decide.outputs.deploy == 'true'
+        run: npm test
+      - if: steps.decide.outputs.deploy == 'true'
+        run: npm run build
+      - if: steps.decide.outputs.deploy == 'true'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
   deploy:
     needs: build
+    if: needs.build.outputs.deploy == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

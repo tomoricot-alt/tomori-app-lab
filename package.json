@@ -8,7 +8,9 @@
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "sync": "node scripts/sync-apps.mjs",
+    "validate:app-info": "node scripts/validate-app-info.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
