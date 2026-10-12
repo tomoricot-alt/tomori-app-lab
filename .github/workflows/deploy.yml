@@ -38,6 +38,8 @@ jobs:
           cache: npm
       - name: 新しいアプリを確認 (GitHub APIのみ)
         id: sync
+        # 万一この確認処理が失敗しても、手動登録済みのアプリ(001〜006)は必ず公開する
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
           FORCE_DEPLOY: ${{ github.event_name != 'schedule' }}
