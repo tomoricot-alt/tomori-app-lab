@@ -1,34 +1,17 @@
 # 運用説明書
 
-## 1. アプリを追加する（50個まで同じ手順）
+## 1. アプリを追加する
 
-`src/data/apps.ts` の `apps` 配列の末尾に1件追加します。
+**APP 007以降は、何も編集する必要はありません。** アプリ側リポジトリに `app-info.json` を置いて公開すれば、一覧サイトへ自動登録されます（詳しくは [AUTOMATION.md](AUTOMATION.md)、雛形は [templates/](../templates/README.md)）。
 
-| 項目 | 必須 | 説明 |
-| --- | --- | --- |
-| `id` | ◯ | 3桁の番号（例 `"004"`）。重複不可。URL は `#/apps/004` になる |
-| `name` | ◯ | アプリ名 |
-| `category` | ◯ | カテゴリ（一覧カードに表示） |
-| `description` | ◯ | 一覧用の短い紹介文（1〜2文） |
-| `tagline` | ◯ | 詳細ページのキャッチコピー |
-| `overview` | ◯ | アプリの概要 |
-| `capabilities` | ◯ | 「このアプリでできること」 |
-| `features` | ◯ | 「主な機能」 |
-| `usageSteps` | ◯ | 使い方。**3〜5ステップ** |
-| `notes` | ◯ | 利用時の注意事項 |
-| `appUrl` | ◯ | アプリ本体の URL（`https://` 始まり） |
-| `icon` | ◯ | 絵文字など（画像は `thumbnail` に `public/` 内のパスを指定） |
-| `status` | ◯ | `published` / `beta` / `coming-soon`（`coming-soon` は「アプリを使う」が非表示） |
-| `publishedAt` | ◯ | 公開日 `YYYY-MM-DD` |
-| `userGuideUrl` | 任意 | 詳しい説明書の URL |
-| `faq` | 任意 | よくある質問 `{ q, a }` の配列 |
+APP 001〜006（`app-info.json` を持たない既存アプリ）の内容は `src/data/curated-apps.json` で管理します。項目の意味は `app-info.json` と同じで、加えて `status`（`published` / `beta` / `coming-soon`）と `publishedAt`（`YYYY-MM-DD`）があります。変更後は `npm test` と `npm run build` を実行し、ブランチ → Pull Request → 本人承認の流れで反映します。
 
-追加後は `npm test`（id重複・手順数などを検証）と `npm run build` を実行し、ブランチで作業して Pull Request を作成、本人が確認してからマージします。
+`app-info.json` の項目: `id` / `name` / `category` / `description` / `tagline` / `overview` / `capabilities` / `features` / `usageSteps`（3〜5個） / `notes` / `appUrl` / `icon`（必須）、`userGuideUrl` / `faq`（任意）。公開日・公開状態は書かず、GitHubの公開履歴から自動判定されます。
 
 ## 2. 公開（GitHub Pages）
 
 初回のみ、リポジトリの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** にします。
-以降は `main` にマージされると `.github/workflows/deploy.yml` が自動でビルド・公開します。
+以降は `main` へのマージ、1時間ごとの自動確認（変更があるときのみ）、手動実行のいずれかで `.github/workflows/deploy.yml` がビルド・公開します。
 公開URL: `https://tomoricot-alt.github.io/tomori-app-lab/`
 
 ## 3. 注意
