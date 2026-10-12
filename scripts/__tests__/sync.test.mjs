@@ -36,6 +36,26 @@ describe('sync: discovering a new app (APP 007 test data)', () => {
   });
 });
 
+describe('sync: scales to the 50-app goal (APP 007〜050)', () => {
+  const ids = Array.from({ length: 44 }, (_, i) => String(7 + i).padStart(3, '0'));
+  const repoOf = (id) => `tomori-test-${id}`;
+  it.each([4, 10, 44])('discovers %i apps through the GitHub API and registers each exactly once', async (count) => {
+    const use = ids.slice(0, count);
+    const w = {
+      repos: ['tomori-app-lab', ...use.map(repoOf)],
+      infos: Object.fromEntries(use.map((id) => [repoOf(id), goodInfo(id, repoOf(id))])),
+      deploys: Object.fromEntries(use.map((id) => [repoOf(id), '2026-11-03T15:30:00Z'])),
+    };
+    const r = await run(w);
+    expect(r.aborted).toBe(false);
+    expect(r.held).toEqual([]);
+    expect(r.apps.map((a) => a.id).sort()).toEqual(use);
+    expect(r.apps.every((a) => a.status === 'published' && a.publishedAt === '2026-11-04')).toBe(true);
+    const again = await run(w, { apps: r.apps, verifiedDates: r.verifiedDates });
+    expect(await fingerprint(again.apps, again.verifiedDates)).toBe(await fingerprint(r.apps, r.verifiedDates));
+  });
+});
+
 describe('sync: apps that must NOT be published', () => {
   it('holds an app whose CI passed but has no GitHub Pages deployment', async () => {
     const r = await run({ repos: [R7], infos: { [R7]: goodInfo('007', R7) }, deploys: {} });
