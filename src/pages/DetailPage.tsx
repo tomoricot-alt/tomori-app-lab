@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { findApp, appLabel } from '../lib/apps';
 import AppIcon from '../components/AppIcon';
+import KidsBadge from '../components/KidsBadge';
 import Steps from '../components/Steps';
 import NotFoundPage from './NotFoundPage';
 
@@ -25,6 +26,7 @@ export default function DetailPage() {
         <AppIcon app={app} size="lg" />
         <p className="eyebrow">{appLabel(app)} ・ {app.category}</p>
         <h1>{app.name}</h1>
+        <KidsBadge app={app} />
         <p className="tagline">{app.tagline}</p>
         {usable ? (
           <a className="btn btn--primary" href={app.appUrl} target="_blank" rel="noopener noreferrer">
